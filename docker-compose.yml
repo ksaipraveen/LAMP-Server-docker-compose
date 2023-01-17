@@ -1,0 +1,38 @@
+version: '3'
+services:
+  db:
+    image: mysql:latest
+    environment:
+      - MYSQL_DATABASE=sai
+      - MYSQL_USER=sai
+      - MYSQL_PASSWORD=password
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+    volumes:
+      - sqldb:/var/lib/mysql
+    networks:
+      - sqlbridge
+  www:
+    image: php:apache
+    volumes:
+      - "./:/var/www/html"
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - sqlbridge
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8001:80
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+    networks:
+      - sqlbridge
+
+volumes:
+  sqldb:
+    driver: local
+networks:
+  sqlbridge:
+    driver: bridge
